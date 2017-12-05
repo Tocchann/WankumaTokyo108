@@ -16,8 +16,13 @@ namespace DispTargetTree
 		public ProjectTracer( string projPath )
 		{
 			var col = ProjectCollection.GlobalProjectCollection;
-			Project = col.LoadProject( projPath ); //new Project( projPath, );
-			ProjectInstance = new ProjectInstance( Project.Xml );
+			//Project = col.LoadProject( projPath );
+			//(string projectFile, IDictionary<string, string> globalProperties, string toolsVersion);
+			Dictionary<string, string> outerProps = new Dictionary<string, string>();
+			var toolset = col.GetToolset( col.DefaultToolsVersion );
+			outerProps.Add( "NuGetRestoreTargets", Path.Combine( toolset.ToolsPath, "NuGet.targets" ) );
+			Project = new Project( projPath, outerProps, col.DefaultToolsVersion );
+			ProjectInstance = new ProjectInstance( projPath, outerProps, col.DefaultToolsVersion );
 		}
 		internal List<string> ResolveProperties( string value )
 		{
