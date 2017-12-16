@@ -18,13 +18,20 @@ namespace DispTargetTree
 			NestLevel = -1;
 			Children = new List<ExecTargetInfo>();
 		}
-		public ExecTargetInfo( ExecTargetInfo parent, string name, string fileName ) : this()
+		public ExecTargetInfo( ExecTargetInfo parent, string name, string fileName, int insPos = -1 ) : this()
 		{
 			NestLevel = parent.NestLevel + 1;
 			Parent = parent;
 			Name = name;
 			FileName = fileName;
-			parent.Children.Add( this );
+			if( insPos != -1 )
+			{
+				parent.Children.Insert( insPos, this );
+			}
+			else
+			{
+				parent.Children.Add( this );
+			}
 		}
 		public string Name { get; set; }
 		public int NestLevel { get; set; }
@@ -49,13 +56,13 @@ namespace DispTargetTree
 		static void Main( string[] args )
 		{
 			ProjectTracer.SetupToolset();
+			//	デフォルトのToolset を表示する
+			ProjectTracer.DispDefaultCollection();
 			if( args.Length < 1 )
 			{
-				//	デフォルトのToolset を表示する
-				ProjectTracer.DispDefaultCollection();
 				return;
 			}
-
+			//	引数で渡されたプロジェクトファイルのビルド情報を表示する
 			foreach( var arg in args )
 			{
 				var tracer = new ProjectTracer( arg );
@@ -175,7 +182,7 @@ namespace DispTargetTree
 			}
 			if( insPos != -1 )
 			{
-				var insTarget = new ExecTargetInfo( parentTarget, target.Name, target.Location.File );
+				var insTarget = new ExecTargetInfo( parentTarget, target.Name, target.Location.File, insPos );
 			}
 			foreach( var childTarget in parentTarget.Children )
 			{

@@ -6,6 +6,7 @@ using System.Linq;
 using System;
 using Microsoft.Win32;
 using System.IO;
+using System.Diagnostics;
 
 namespace DispTargetTree
 {
@@ -56,6 +57,9 @@ namespace DispTargetTree
 		internal static void SetupToolset()
 		{
 			Console.WriteLine( $"DefaultToolsVersion={ProjectCollection.GlobalProjectCollection.DefaultToolsVersion}" );
+			Trace.WriteLine( $"DefaultToolsVersion={ProjectCollection.GlobalProjectCollection.DefaultToolsVersion}" );
+			//	MSBuild のランタイムが検出してくれない場合こういう感じで自力追加する
+#if false
 			//	VSは32bitキーしかセットアップしないので、とりあえず３２ビットキーを見る
 			bool setToV15 = false;
 			RegistryKey keyVs7 = null;
@@ -110,35 +114,46 @@ namespace DispTargetTree
 				}
 			}
 			Console.WriteLine( $"DefaultToolsVersion={ProjectCollection.GlobalProjectCollection.DefaultToolsVersion}" );
+			Trace.WriteLine( $"DefaultToolsVersion={ProjectCollection.GlobalProjectCollection.DefaultToolsVersion}" );
+#endif
 		}
 		internal static void DispDefaultCollection()
 		{
 			foreach( var toolset in ProjectCollection.GlobalProjectCollection.Toolsets )
 			{
 				Console.WriteLine( $"ToolsVersion={toolset.ToolsVersion}" );
+				Trace.WriteLine( $"ToolsVersion={toolset.ToolsVersion}" );
 				Console.WriteLine( $"ToolsVersion={toolset.ToolsPath}" );
+				Trace.WriteLine( $"ToolsVersion={toolset.ToolsPath}" );
 				if( toolset.Properties.Count != 0 )
 				{
 					Console.WriteLine( "--Properties--" );
+					Trace.WriteLine( "--Properties--" );
 					foreach( var propPair in toolset.Properties )
 					{
 						Console.WriteLine( $"  {propPair.Key}=[{propPair.Value.EvaluatedValue}]");
+						Trace.WriteLine( $"  {propPair.Key}=[{propPair.Value.EvaluatedValue}]");
 					}
 				}
 				if( toolset.SubToolsets.Count != 0 )
 				{
 					Console.WriteLine( "--SubToolset--" );
+					Trace.WriteLine( "--SubToolset--" );
 					foreach( var subSet in toolset.SubToolsets )
 					{
 						Console.WriteLine( $"  SubToolsetVersion={subSet.Value.SubToolsetVersion}" );
+						Trace.WriteLine( $"  SubToolsetVersion={subSet.Value.SubToolsetVersion}" );
 						Console.WriteLine(  "  --Properties--" );
+						Trace.WriteLine(  "  --Properties--" );
 						foreach( var propPair in subSet.Value.Properties )
 						{
 							Console.WriteLine( $"    {propPair.Key}=[{propPair.Value.EvaluatedValue}]" );
+							Trace.WriteLine( $"    {propPair.Key}=[{propPair.Value.EvaluatedValue}]" );
 						}
 					}
 				}
 				Console.WriteLine("---");
+				Trace.WriteLine("---");
 			}
 		}
 	}
